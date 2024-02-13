@@ -64,14 +64,15 @@ export default class RinhaService {
           data_extrato: moment,
           limite
         },
-        ultimas_transacoes: result.rows.map((row) => ({
+        ultimas_transacoes: result.rows[0].tipo ? result.rows.map((row) => ({
           valor: row.valor,
           tipo: row.tipo,
           descricao: row.descricao,
           realizada_em: row.data_transacao
-        }))
+        })) : []
       });
     } catch (err) {
+      console.error(err)
       res.status(404).send();
     }
   }

@@ -30,7 +30,10 @@ export const updateClient = async (pgClient, clientId, valor) => {
 
 export const getLastClientTransactions = async (pgClient, clientId) => {
   return (await pgClient.query(
-    'SELECT *, NOW() as moment FROM transacoes JOIN clientes ON transacoes.client_id = clientes.id WHERE client_id = $1 ORDER BY data_transacao DESC LIMIT 10',
+    `SELECT *, NOW() as moment FROM clientes
+    LEFT JOIN transacoes ON clientes.id = transacoes.client_id
+    WHERE clientes.id = $1
+    ORDER BY transacoes.data_transacao DESC LIMIT 10`,
     [clientId]
   ))
 }

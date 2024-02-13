@@ -16,10 +16,6 @@ export const getPgClient = async (pool) => {
   try {
     const client = await pool.connect()
 
-    console.log({
-      client
-    })
-
     return client
   } catch (err) {
     console.error('Error on get pg client')
