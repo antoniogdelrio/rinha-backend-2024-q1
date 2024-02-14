@@ -13,7 +13,7 @@ export const saveTransaction = async (pgClient, {
 
 export const getClient = async (pgClient, clientId) => {
   const res = (await pgClient.query(
-    'SELECT * FROM clientes WHERE id = $1', [clientId]
+    'SELECT * FROM clientes WHERE id = $1 FOR UPDATE', [clientId]
   ))
 
   return res.rows[0]

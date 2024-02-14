@@ -22,15 +22,16 @@ export default class RinhaService {
       const clientId = req.params.id
       const getSignal = req.body.tipo === 'd' ? -1 : 1
 
+      await pgClient.query('BEGIN')
+
       const { limite, saldo_inicial } = await getClient(pgClient, clientId)
 
       if (req.body.tipo === 'd') {
         if ((saldo_inicial - req.body.valor) < limite * -1) {
+          await pgClient.query('COMMIT')
           return res.status(422).send()
         }
       }
-
-      await pgClient.query('BEGIN')
 
       await saveTransaction(pgClient, {
         clientId,
