@@ -10,6 +10,15 @@ export default class RinhaService {
     const pgClient = await getPgClient(this.pgPool)
 
     try {
+      if (!['d', 'c'].includes(req.body.tipo))
+        throw new Error()
+
+      if (!Number.isInteger(req.body.valor))
+        throw new Error()
+
+      if (!Boolean(req.body.descricao) || req.body.descricao.length > 10)
+        throw new Error()
+
       const clientId = req.params.id
       const getSignal = req.body.tipo === 'd' ? -1 : 1
 
@@ -30,8 +39,6 @@ export default class RinhaService {
         descricao: req.body.descricao
       })
 
-      await pgClient.query('COMMIT')
-
       const updatedData = await updateClient(pgClient, clientId, (getSignal) * req.body.valor)
 
       await pgClient.query('COMMIT')
@@ -42,7 +49,9 @@ export default class RinhaService {
     } catch (err) {
       console.error(err)
       await pgClient.query('ROLLBACK')
-      res.status(404).send();
+      res.status(422).send();
+    } finally {
+      pgClient.release()
     }
   }
 
@@ -74,6 +83,8 @@ export default class RinhaService {
     } catch (err) {
       console.error(err)
       res.status(404).send();
+    } finally {
+      pgClient.release()
     }
   }
 }

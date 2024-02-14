@@ -7,18 +7,19 @@ const pgPool = new pg.Pool({
   user: 'admin',
   keepAlive: true,
   password: '123',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000
+  max: 10,
+  idleTimeoutMillis: 0,
+  connectionTimeoutMillis: 60_000
 })
 
 export const getPgClient = async (pool) => {
   try {
     const client = await pool.connect()
+    console.log('successfully get pool client')
 
     return client
   } catch (err) {
-    console.error('Error on get pg client')
+    console.error('Error on get pg client', err)
   }
 
 }
