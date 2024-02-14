@@ -48,7 +48,6 @@ export default class RinhaService {
         "limite": limite, "saldo": updatedData.saldo_inicial
       });
     } catch (err) {
-      console.error(err)
       await pgClient.query('ROLLBACK')
       res.status(422).send();
     } finally {
@@ -82,7 +81,6 @@ export default class RinhaService {
         })) : []
       });
     } catch (err) {
-      console.error(err)
       res.status(404).send();
     } finally {
       pgClient.release()

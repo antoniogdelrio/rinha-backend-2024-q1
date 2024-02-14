@@ -19,6 +19,4 @@ app.get('/clientes/:id/extrato', async (req, res) => {
   await rinhaService.getBankStatement(req, res)
 })
 
-app.listen(8080, () => {
-  console.log('Server listening in port 8080')
-})
+app.listen(8080)
