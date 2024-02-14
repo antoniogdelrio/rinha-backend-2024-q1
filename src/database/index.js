@@ -7,7 +7,7 @@ const pgPool = new pg.Pool({
   user: 'admin',
   keepAlive: true,
   password: '123',
-  max: 10,
+  max: 15,
   idleTimeoutMillis: 0,
   connectionTimeoutMillis: 60_000
 })
