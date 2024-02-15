@@ -1,5 +1,5 @@
 import express from 'express'
-import pgPool from './database/index.js';
+import pgPool, { getPgClient } from './database/index.js';
 import bodyParser from 'body-parser';
 import RinhaService from './services/RinhaService.js';
 
@@ -19,4 +19,11 @@ app.get('/clientes/:id/extrato', async (req, res) => {
   await rinhaService.getBankStatement(req, res)
 })
 
-app.listen(8080)
+app.listen(process.env.PORT, () => {
+  console.log("Server started in port " + process.env.PORT)
+  console.log("Warming up server...")
+  Promise.all(Array(15).fill().map(() => getPgClient(pgPool))).then((clients) => {
+    clients.forEach(cl => cl.release())
+    console.log("Server warmed up!")
+  })
+})
