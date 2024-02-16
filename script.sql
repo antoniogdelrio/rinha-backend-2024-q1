@@ -24,4 +24,6 @@ BEGIN
     (10000 * 100, 0),
     (100000 * 100, 0),
     (5000 * 100, 0);
-END; $$
+END; $$;
+
+CREATE INDEX idx_client ON transacoes (client_id ASC)
