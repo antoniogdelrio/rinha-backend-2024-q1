@@ -24,10 +24,10 @@ export default class RinhaService {
 
       await pgClient.query('BEGIN')
 
-      const { limite, saldo_inicial } = await getClient(pgClient, clientId)
+      const { limite, saldo } = await getClient(pgClient, clientId)
 
       if (req.body.tipo === 'd') {
-        if ((saldo_inicial - req.body.valor) < limite * -1) {
+        if ((saldo - req.body.valor) < limite * -1) {
           await pgClient.query('COMMIT')
           return res.status(422).send()
         }
@@ -45,7 +45,7 @@ export default class RinhaService {
       await pgClient.query('COMMIT')
 
       res.status(200).json({
-        "limite": limite, "saldo": updatedData.saldo_inicial
+        "limite": limite, "saldo": updatedData.saldo
       });
     } catch (err) {
       await pgClient.query('ROLLBACK')
@@ -62,14 +62,14 @@ export default class RinhaService {
       const result = await getLastClientTransactions(pgClient, req.params.id)
 
       const {
-        saldo_inicial,
+        saldo,
         limite,
         moment
       } = result.rows[0]
 
       res.status(200).json({
         saldo: {
-          total: saldo_inicial,
+          total: saldo,
           data_extrato: moment,
           limite
         },
