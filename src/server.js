@@ -19,8 +19,8 @@ app.get('/clientes/:id/extrato', async (req, res) => {
   await rinhaService.getBankStatement(req, res)
 })
 
-app.listen(process.env.PORT, () => {
-  console.log("Server started in port " + process.env.PORT)
+app.listen(8080, () => {
+  console.log("Server started in port 8080")
   console.log("Warming up server...")
   Promise.all(Array(15).fill().map(() => getPgClient(pgPool))).then((clients) => {
     clients.forEach(cl => cl.release())
