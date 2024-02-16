@@ -21,7 +21,7 @@ export const getClient = async (pgClient, clientId) => {
 
 export const updateClient = async (pgClient, clientId, valor) => {
   const res = await pgClient.query(
-    'UPDATE clientes SET saldo_inicial = saldo_inicial + $1 WHERE id = $2 RETURNING saldo_inicial',
+    'UPDATE clientes SET saldo = saldo + $1 WHERE id = $2 RETURNING saldo',
     [valor, clientId]
   )
 

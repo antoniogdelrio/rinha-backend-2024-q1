@@ -1,7 +1,7 @@
 CREATE TABLE clientes (
   id SERIAL PRIMARY KEY,
   limite INT,
-  saldo_inicial INT
+  saldo INT
 );
 
 CREATE TABLE transacoes (
@@ -17,7 +17,7 @@ CREATE TABLE transacoes (
 
 DO $$
 BEGIN
-  INSERT INTO clientes (limite, saldo_inicial)
+  INSERT INTO clientes (limite, saldo)
   VALUES
     (1000 * 100, 0),
     (800 * 100, 0),
