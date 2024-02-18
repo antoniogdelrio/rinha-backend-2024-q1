@@ -6,7 +6,7 @@ export const saveTransaction = async (pgClient, {
 }) => {
 
   return (await pgClient.query(
-    'INSERT INTO transacoes (client_id, valor, tipo, descricao, data_transacao) VALUES ($1, $2, $3, $4, NOW())',
+    'SELECT save_transaction($1, $2, $3, $4);',
     [clientId, valor, tipo, descricao]
   ))
 }

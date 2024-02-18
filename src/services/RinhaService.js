@@ -11,43 +11,40 @@ export default class RinhaService {
 
     try {
       if (!['d', 'c'].includes(req.body.tipo))
-        throw new Error()
+        return res.status(422).send();
 
       if (!Number.isInteger(req.body.valor))
-        throw new Error()
+        return res.status(422).send();
 
       if (!Boolean(req.body.descricao) || req.body.descricao.length > 10)
-        throw new Error()
+        return res.status(422).send();
 
       const clientId = req.params.id
-      const getSignal = req.body.tipo === 'd' ? -1 : 1
 
       await pgClient.query('BEGIN')
 
-      const { limite, saldo } = await getClient(pgClient, clientId)
-
-      if (req.body.tipo === 'd') {
-        if ((saldo - req.body.valor) < limite * -1) {
-          await pgClient.query('COMMIT')
-          return res.status(422).send()
-        }
-      }
-
-      await saveTransaction(pgClient, {
+      const result = await saveTransaction(pgClient, {
         clientId,
         valor: req.body.valor,
         tipo: req.body.tipo,
         descricao: req.body.descricao
       })
 
-      const updatedData = await updateClient(pgClient, clientId, (getSignal) * req.body.valor)
-
       await pgClient.query('COMMIT')
 
-      res.status(200).json({
-        "limite": limite, "saldo": updatedData.saldo
-      });
+      if (result.rows[0].save_transaction) {
+        const resultValues = result.rows[0].save_transaction.slice(1, -1).split(',')
+        const limite = Number(resultValues[0])
+        const saldo = Number(resultValues[1])
+
+        return res.status(200).json({
+          "limite": limite, "saldo": saldo
+        });
+      }
+
+      return res.status(422).send();
     } catch (err) {
+      console.error(err)
       await pgClient.query('ROLLBACK')
       res.status(422).send();
     } finally {
