@@ -1,7 +1,9 @@
 import pgPool, { getPgClient } from './database/index.js';
 import RinhaService from './services/RinhaService.js';
 import HyperExpress from 'hyper-express';
-const webserver = new HyperExpress.Server();
+const webserver = new HyperExpress.Server({
+  fast_buffers: true
+});
 
 const rinhaService = new RinhaService({
   pgPool
