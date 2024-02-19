@@ -22,6 +22,9 @@ export default class RinhaService {
 
       const clientId = req.path_parameters.id
 
+      if (clientId > 5)
+        return res.status(404).send();
+
       await pgClient.query('BEGIN')
 
       const result = await saveTransaction(pgClient, {
@@ -45,7 +48,6 @@ export default class RinhaService {
 
       return res.status(422).send();
     } catch (err) {
-      console.error(err)
       await pgClient.query('ROLLBACK')
       res.status(422).send();
     } finally {
@@ -57,6 +59,11 @@ export default class RinhaService {
     const pgClient = await getPgClient(this.pgPool)
 
     try {
+      const clientId = req.path_parameters.id
+
+      if (clientId > 5)
+        return res.status(404).send();
+
       const result = await getLastClientTransactions(pgClient, req.path_parameters.id)
 
       const {
