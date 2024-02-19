@@ -8,26 +8,30 @@ export default class RinhaService {
 
   async saveTransaction(req, res) {
     const pgClient = await getPgClient(this.pgPool)
+    const body = await req.json()
 
     try {
-      if (!['d', 'c'].includes(req.body.tipo))
+      if (!['d', 'c'].includes(body.tipo))
         return res.status(422).send();
 
-      if (!Number.isInteger(req.body.valor))
+      if (!Number.isInteger(body.valor))
         return res.status(422).send();
 
-      if (!Boolean(req.body.descricao) || req.body.descricao.length > 10)
+      if (!Boolean(body.descricao) || body.descricao.length > 10)
         return res.status(422).send();
 
-      const clientId = req.params.id
+      const clientId = req.path_parameters.id
+
+      if (clientId > 5)
+        return res.status(404).send();
 
       await pgClient.query('BEGIN')
 
       const result = await saveTransaction(pgClient, {
         clientId,
-        valor: req.body.valor,
-        tipo: req.body.tipo,
-        descricao: req.body.descricao
+        valor: body.valor,
+        tipo: body.tipo,
+        descricao: body.descricao
       })
 
       await pgClient.query('COMMIT')
@@ -44,7 +48,6 @@ export default class RinhaService {
 
       return res.status(422).send();
     } catch (err) {
-      console.error(err)
       await pgClient.query('ROLLBACK')
       res.status(422).send();
     } finally {
@@ -56,7 +59,12 @@ export default class RinhaService {
     const pgClient = await getPgClient(this.pgPool)
 
     try {
-      const result = await getLastClientTransactions(pgClient, req.params.id)
+      const clientId = req.path_parameters.id
+
+      if (clientId > 5)
+        return res.status(404).send();
+
+      const result = await getLastClientTransactions(pgClient, req.path_parameters.id)
 
       const {
         saldo,
