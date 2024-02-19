@@ -15,6 +15,7 @@
   "dependencies": {
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
+    "fastify": "^4.26.1",
     "pg": "^8.11.3"
   },
   "devDependencies": {

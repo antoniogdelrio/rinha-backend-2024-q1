@@ -11,13 +11,13 @@ export default class RinhaService {
 
     try {
       if (!['d', 'c'].includes(req.body.tipo))
-        return res.status(422).send();
+        return res.code(422).send();
 
       if (!Number.isInteger(req.body.valor))
-        return res.status(422).send();
+        return res.code(422).send();
 
       if (!Boolean(req.body.descricao) || req.body.descricao.length > 10)
-        return res.status(422).send();
+        return res.code(422).send();
 
       const clientId = req.params.id
 
@@ -37,16 +37,16 @@ export default class RinhaService {
         const limite = Number(resultValues[0])
         const saldo = Number(resultValues[1])
 
-        return res.status(200).json({
+        return res.code(200).send({
           "limite": limite, "saldo": saldo
         });
       }
 
-      return res.status(422).send();
+      return res.code(422).send();
     } catch (err) {
       console.error(err)
       await pgClient.query('ROLLBACK')
-      res.status(422).send();
+      res.code(422).send();
     } finally {
       pgClient.release()
     }
@@ -64,7 +64,7 @@ export default class RinhaService {
         moment
       } = result.rows[0]
 
-      res.status(200).json({
+      res.code(200).send({
         saldo: {
           total: saldo,
           data_extrato: moment,
@@ -78,7 +78,7 @@ export default class RinhaService {
         })) : []
       });
     } catch (err) {
-      res.status(404).send();
+      res.code(404).send();
     } finally {
       pgClient.release()
     }
