@@ -26,8 +26,7 @@ services:
           memory: "300MB"
 
   api01: &api
-    build: .
-    # image: antoniogdelrio/rinha-backend-2024-q1:latest
+    image: antoniogdelrio/rinha-backend-2024-q1:latest
     hostname: api01
     environment:
       - DB_HOSTNAME=localhost
