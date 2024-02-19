@@ -8,26 +8,27 @@ export default class RinhaService {
 
   async saveTransaction(req, res) {
     const pgClient = await getPgClient(this.pgPool)
+    const body = await req.json()
 
     try {
-      if (!['d', 'c'].includes(req.body.tipo))
-        return res.code(422).send();
+      if (!['d', 'c'].includes(body.tipo))
+        return res.status(422).send();
 
-      if (!Number.isInteger(req.body.valor))
-        return res.code(422).send();
+      if (!Number.isInteger(body.valor))
+        return res.status(422).send();
 
-      if (!Boolean(req.body.descricao) || req.body.descricao.length > 10)
-        return res.code(422).send();
+      if (!Boolean(body.descricao) || body.descricao.length > 10)
+        return res.status(422).send();
 
-      const clientId = req.params.id
+      const clientId = req.path_parameters.id
 
       await pgClient.query('BEGIN')
 
       const result = await saveTransaction(pgClient, {
         clientId,
-        valor: req.body.valor,
-        tipo: req.body.tipo,
-        descricao: req.body.descricao
+        valor: body.valor,
+        tipo: body.tipo,
+        descricao: body.descricao
       })
 
       await pgClient.query('COMMIT')
@@ -37,16 +38,16 @@ export default class RinhaService {
         const limite = Number(resultValues[0])
         const saldo = Number(resultValues[1])
 
-        return res.code(200).send({
+        return res.status(200).json({
           "limite": limite, "saldo": saldo
         });
       }
 
-      return res.code(422).send();
+      return res.status(422).send();
     } catch (err) {
       console.error(err)
       await pgClient.query('ROLLBACK')
-      res.code(422).send();
+      res.status(422).send();
     } finally {
       pgClient.release()
     }
@@ -56,7 +57,7 @@ export default class RinhaService {
     const pgClient = await getPgClient(this.pgPool)
 
     try {
-      const result = await getLastClientTransactions(pgClient, req.params.id)
+      const result = await getLastClientTransactions(pgClient, req.path_parameters.id)
 
       const {
         saldo,
@@ -64,7 +65,7 @@ export default class RinhaService {
         moment
       } = result.rows[0]
 
-      res.code(200).send({
+      res.status(200).json({
         saldo: {
           total: saldo,
           data_extrato: moment,
@@ -78,7 +79,7 @@ export default class RinhaService {
         })) : []
       });
     } catch (err) {
-      res.code(404).send();
+      res.status(404).send();
     } finally {
       pgClient.release()
     }
